@@ -16,7 +16,7 @@ function Feedback({ setActive }) {
   }, []);
 
   return (
-    <div className="feedback-wrapper">
+    <div className="content">
       <div className="section-label">Feedback</div>
       {loading 
         ? <p className="empty-text">Loading feedbacks...</p>

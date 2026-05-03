@@ -110,17 +110,6 @@ function FeedbackForm({ currentUser }) {
       </label>
 
       <label className="field-label">
-        Name
-        <input
-          className="text-input"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          placeholder="Enter your name"
-        />
-      </label>
-
-      <label className="field-label">
         Student ID
         <input
           className="text-input"

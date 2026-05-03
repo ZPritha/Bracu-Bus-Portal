@@ -6,6 +6,11 @@ const scheduleSchema = new mongoose.Schema({
     ref: 'Route',
     required: true
   },
+  schedule_ID: {
+    type: String,
+    default: () => new mongoose.Types.ObjectId().toString(),
+    unique: true
+  },
   stoppage_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Stoppage',

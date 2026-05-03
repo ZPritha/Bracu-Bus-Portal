@@ -12,9 +12,9 @@ const busSchema = new mongoose.Schema({
     ref: 'Route',
     required: true
   },
-  capacity: {
+  seats: {
     type: Number,
-    default: 40
+    default: 5
   },
   is_active: {
     type: Boolean,

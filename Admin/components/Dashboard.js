@@ -10,7 +10,6 @@ function ActionButtons({ addAnnouncement, onDraftSaved }) {
         >
           Create Announcement
         </button>
-        <button className="action-btn btn-report">Set Up Deals</button>
       </div>
 
       {showModal && (

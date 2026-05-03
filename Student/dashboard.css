@@ -729,124 +729,210 @@
   background: #e8fff0;
   color: #00884a;
 }
-
 /* ── Login Page ── */
 .login-page {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: 'DM Sans', sans-serif;
+  position: relative;
+  overflow: hidden;
+  background-image: url('../brac.jpg');
+  background-size: cover;
+  background-position: center 30%;
 }
-
+ 
+/* Darker at the bottom, lighter at top — same direction as landing page */
+.login-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(10, 20, 15, 0.30) 0%,
+    rgba(10, 20, 15, 0.55) 50%,
+    rgba(10, 20, 15, 0.88) 100%
+  );
+  z-index: 0;
+}
+ 
+/* Rainbow folk-art strip */
+.login-page::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  z-index: 2;
+  background: linear-gradient(90deg,
+    #e63946, #f4a261, #2a9d8f, #e9c46a,
+    #1a8fe3, #e63946, #f4a261, #2a9d8f);
+  background-size: 200%;
+  animation: shimmer 6s linear infinite;
+}
+ 
+@keyframes shimmer {
+  from { background-position: 0% 50%; }
+  to   { background-position: 200% 50%; }
+}
+ 
+/* ── Ashy white card ── */
 .login-box {
-  background: #fff;
+  position: relative;
+  z-index: 1;
+  background: rgba(235, 238, 242, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.60);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
   border-radius: 24px;
   padding: 40px 36px;
   width: 400px;
   max-width: 90vw;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.40);
 }
-
+ 
+.login-back-link {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7a8fa0;
+  text-decoration: none;
+  margin-bottom: 1.5rem;
+  transition: color 0.2s;
+}
+ 
+.login-back-link:hover {
+  color: #1a8fe3;
+}
+ 
 .login-logo {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
   justify-content: center;
 }
-
+ 
 .login-logo-img {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  object-fit: contain;
 }
-
+ 
 .login-logo-text {
-  font-size: 18px;
-  font-weight: 800;
-  color: #1a1a2e;
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.15rem;
+  font-weight: 400;
+  color: #0d1f35;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
 }
-
+ 
 .login-tabs {
   display: flex;
-  background: #f0f0f8;
+  background: rgba(200, 210, 220, 0.45);
+  border: 1px solid rgba(180, 195, 210, 0.5);
   border-radius: 12px;
   padding: 4px;
-  margin-bottom: 24px;
+  margin-bottom: 22px;
 }
-
+ 
 .login-tab {
   flex: 1;
   padding: 10px;
   border: none;
   background: transparent;
   border-radius: 10px;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 14px;
   cursor: pointer;
-  color: #888;
-  font-family: 'Nunito', sans-serif;
+  color: #7a8fa0;
+  font-family: 'DM Sans', sans-serif;
   transition: all 0.2s;
 }
-
+ 
 .login-tab.active {
-  background: #fff;
-  color: #1a1a2e;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: rgba(255, 255, 255, 0.80);
+  color: #1a8fe3;
+  box-shadow: 0 2px 8px rgba(26, 143, 227, 0.15);
 }
-
+ 
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 11px;
 }
-
+ 
 .login-input {
   padding: 12px 16px;
   border-radius: 12px;
-  border: none;
-  background: #f0f0f8;
+  border: 1.5px solid rgba(180, 195, 210, 0.6);
+  background: rgba(255, 255, 255, 0.55);
   font-size: 14px;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   outline: none;
   width: 100%;
   box-sizing: border-box;
+  color: #0d1f35;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
 }
-
+ 
+.login-input::placeholder {
+  color: #9aaabb;
+}
+ 
+.login-input:focus {
+  border-color: #1a8fe3;
+  background: rgba(255, 255, 255, 0.80);
+  box-shadow: 0 0 0 3px rgba(26, 143, 227, 0.12);
+}
+ 
+/* ── Buttons unchanged ── */
 .login-btn {
   padding: 13px;
   border-radius: 12px;
   border: none;
-  background: linear-gradient(90deg, #667eea, #764ba2);
-  color: #fff;
-  font-weight: 800;
+  background: linear-gradient(135deg, #1a8fe3, #0d6bbf);
+  color: #ffffff;
+  font-weight: 700;
   font-size: 15px;
   cursor: pointer;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   margin-top: 4px;
-  transition: opacity 0.2s;
+  letter-spacing: 0.02em;
+  transition: opacity 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 14px rgba(26, 143, 227, 0.35);
 }
-
+ 
 .login-btn:hover {
-  opacity: 0.9;
+  opacity: 0.92;
+  box-shadow: 0 6px 20px rgba(26, 143, 227, 0.45);
 }
-
-/*Student logout topbar*/
+ 
+.login-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+/* ── Logout button (topbar) ── */
 .logout-btn {
-  padding: 8px 18px;
+  padding: 7px 16px;
   border-radius: 20px;
-  border: none;
-  background: #ffe8e8;
-  color: #cc0000;
-  font-weight: 700;
+  border: 1px solid rgba(224, 92, 92, 0.35);
+  background: rgba(224, 92, 92, 0.12);
+  color: #f08080;
+  font-weight: 600;
   font-size: 13px;
   cursor: pointer;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.2s, border-color 0.2s;
 }
 
 .logout-btn:hover {
-  background: #ffcccc;
+  background: rgba(224, 92, 92, 0.22);
+  border-color: rgba(224, 92, 92, 0.55);
 }
 
 /* ── Lost & Found ── */
@@ -2168,4 +2254,174 @@
   font-weight: 700;
   cursor: pointer;
   font-family: 'Nunito', sans-serif;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 24px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  position: relative;
+}
+
+.modal-title { font-size: 20px; font-weight: 800; color: #1a1a2e; margin-bottom: 8px; }
+.modal-subtitle { font-size: 14px; color: #666; margin-bottom: 20px; }
+
+/* ── Upcoming Bus ────────────────────────────────────── */
+.upcoming-bus {
+  background: #fff;
+  border-radius: 18px;
+  padding: 20px 22px;
+  margin-top: 20px;
+  box-shadow: 0 2px 14px rgba(0,119,204,0.09);
+  border: 1px solid #e0ecf8;
+}
+
+.upcoming-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: #1a2a3a;
+  margin: 0 0 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.upcoming-route {
+  font-size: 13px;
+  color: #666;
+  margin: 0 0 14px;
+}
+
+.empty-text {
+  color: #aaa;
+  font-size: 14px;
+  margin: 10px 0 0;
+}
+
+.no-bus-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 0 8px;
+  color: #aaa;
+  font-size: 14px;
+  gap: 6px;
+}
+.no-bus-card span { font-size: 36px; }
+.no-bus-card p { margin: 0; }
+
+.bus-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f7fbff;
+  border: 1.5px solid #d0e8f8;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  transition: box-shadow 0.15s;
+}
+.bus-card:hover { box-shadow: 0 4px 16px rgba(0,119,204,0.12); }
+
+.bus-card-next {
+  background: linear-gradient(135deg, #e8f4ff, #f0ecff);
+  border-color: #4f46e5;
+}
+
+.bus-card-left { flex: 1; }
+
+.bus-trip-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: #4f46e5;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 3px;
+}
+
+.bus-stoppage {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a2a3a;
+  margin-bottom: 4px;
+}
+
+.bus-times {
+  font-size: 12px;
+  color: #666;
+}
+
+.bus-card-right {
+  text-align: center;
+  min-width: 72px;
+}
+
+.bus-countdown {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0077cc;
+  line-height: 1.1;
+}
+
+.bus-countdown.urgent {
+  color: #e53935;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.55; }
+}
+
+.bus-countdown-label {
+  font-size: 11px;
+  color: #999;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+/* ── Live Map ─────────────────────────────────────────── */
+.live-map-wrapper {
+  background: #fff;
+  border-radius: 18px;
+  padding: 20px 22px;
+  margin-top: 20px;
+  box-shadow: 0 2px 14px rgba(0,119,204,0.09);
+  border: 1px solid #e0ecf8;
+}
+
+.map-route-badge {
+  display: inline-block;
+  background: #4f46e5;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.bus-status-bar {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  background: #f3f4f6;
+  color: #374151;
 }

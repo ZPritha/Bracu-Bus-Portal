@@ -1,12 +1,81 @@
+// ── Hash routing maps ──────────────────────────────────────────────────────
+const STUDENT_HASH_TO_ACTIVE = {
+  '/dashboard':   'Dashboard',
+  '/schedules':   'Schedules',
+  '/lost-found':  'Lost & Found',
+  '/my-bookings': 'payment',
+  '/info':        'Info & Rules',
+  '/feedback':    'Feedback',
+  '/my-reports':  'My Reports',
+  '/book-seat':   'Book Seat',
+  '/choose-plan': 'Choose Plan',
+  '/booking':     'Booking',
+  '/my-waitlist': 'My Waitlist',
+};
+const STUDENT_ACTIVE_TO_HASH = Object.fromEntries(
+  Object.entries(STUDENT_HASH_TO_ACTIVE).map(([h, a]) => [a, h])
+);
+
+function getInitialActive() {
+  const hash = window.location.hash.replace('#', '');
+  return STUDENT_HASH_TO_ACTIVE[hash] || 'Dashboard';
+}
+
 function App() {
   const [currentUser, setCurrentUser]     = React.useState(null);
-  const [active, setActive]               = React.useState("Dashboard");
+  const [active, setActive]               = React.useState(getInitialActive);
   const [fare, setFare]                   = React.useState(0);
   const [plan, setPlan]                   = React.useState("No Plan");
   const [announcements, setAnnouncements] = React.useState([]);
   const [notifications, setNotifications] = React.useState([]);
   const [bookingInfo, setBookingInfo]     = React.useState({});
   const [showReport, setShowReport]       = React.useState(false);
+  const [showScanner, setShowScanner]     = React.useState(false);
+
+  // Navigate: update state + URL hash together
+  function navigate(page) {
+    const hash = STUDENT_ACTIVE_TO_HASH[page] || '/dashboard';
+    window.history.pushState({ page }, '', '#' + hash);
+    setActive(page);
+  }
+
+  // Sync active when user presses browser Back / Forward
+  React.useEffect(() => {
+    function onHashChange() {
+      const hash = window.location.hash.replace('#', '');
+      const page = STUDENT_HASH_TO_ACTIVE[hash] || 'Dashboard';
+      setActive(page);
+    }
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
+
+  function handleScanSuccess(scannedValue) {
+    // scannedValue is expected to be something like "Route 1"
+    fetch(`http://localhost:9255/api/bookings/update-status-by-route`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        studentId: currentUser.studentId,
+        routeName: scannedValue, 
+        arrival_status: 'arrived' 
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.modifiedCount > 0) {
+        alert(`✅ Welcome aboard! ${data.modifiedCount} booking(s) for ${scannedValue} updated to Arrived.`);
+      } else if (data.matchedCount > 0) {
+        alert(`ℹ️ You are already marked as Arrived for ${scannedValue}.`);
+      } else {
+        alert(`❌ No active bookings found for ${scannedValue}.`);
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert("❌ Failed to update arrival status.");
+    });
+  }
 
   React.useEffect(() => {
     fetch('http://localhost:9255/api/announcements')
@@ -15,14 +84,12 @@ function App() {
       .catch(err => console.log(err));
   }, []);
 
+  // Set hash to #/dashboard when user logs in for the first time
   React.useEffect(() => {
     if (!currentUser) return;
-    window.history.pushState(null, '', window.location.href);
-    function handlePop() {
-      window.history.pushState(null, '', window.location.href);
+    if (!window.location.hash) {
+      window.history.replaceState({}, '', '#/dashboard');
     }
-    window.addEventListener('popstate', handlePop);
-    return () => window.removeEventListener('popstate', handlePop);
   }, [currentUser]);
 
   React.useEffect(() => {
@@ -87,7 +154,7 @@ function App() {
           clearPaymentSession();
           window.history.replaceState({}, '', window.location.pathname);
           alert(`✅ Payment successful! ${paidPlan} plan activated.`);
-          setActive('payment');
+          navigate('payment');
           return;
         }
 
@@ -122,8 +189,9 @@ function App() {
 
   function handleLogout() {
     setCurrentUser(null);
-    setActive("Dashboard");
+    setActive('Dashboard');
     setNotifications([]);
+    window.history.replaceState({}, '', '#/dashboard');
   }
 
   if (!currentUser) {
@@ -132,32 +200,36 @@ function App() {
 
   return (
     <div className="app">
-      <Sidebar active={active} setActive={setActive} />
+      <Sidebar active={active} setActive={navigate} />
       <div className="main">
         <Topbar
           user={currentUser}
           onLogout={handleLogout}
           notifications={notifications}
           onMarkAllRead={handleMarkAllRead}
-          setActive={setActive}
+          setActive={navigate}
         />
         {active === "Dashboard" && (
           <Dashboard
-            setActive={setActive}
+            setActive={navigate}
             announcements={announcements}
             currentUser={currentUser}
             setShowReport={setShowReport}
+            setShowScanner={setShowScanner}
           />
         )}
+        {active === "Schedules" && (
+          <StudentSchedules />
+        )}
         {active === "Lost & Found" && (
-          <LostFound currentUser={currentUser} setActive={setActive} />
+          <LostFound currentUser={currentUser} setActive={navigate} />
         )}
         {active === "Book Seat" && (
-          <BookSeat setActive={setActive} setFare={setFare} setBookingInfo={setBookingInfo} />
+          <BookSeat setActive={navigate} setFare={setFare} setBookingInfo={setBookingInfo} />
         )}
         {active === "Choose Plan" && (
           <ChoosePlan
-            setActive={setActive}
+            setActive={navigate}
             fare={fare}
             setPlan={setPlan}
             currentUser={currentUser}
@@ -166,25 +238,38 @@ function App() {
           />
         )}
         {active === "Booking" && (
-          <Booking setActive={setActive} fare={fare} plan={plan} currentUser={currentUser} />
+          <Booking setActive={navigate} fare={fare} plan={plan} currentUser={currentUser} />
         )}
 
         {active === "payment" && (
-          <MyBookings currentUser={currentUser} setActive={setActive} />
+          <MyBookings currentUser={currentUser} setActive={navigate} />
         )}
 
         {active === "Feedback" && (
-          <Feedback setActive={setActive} currentUser={currentUser} />
+          <Feedback setActive={navigate} currentUser={currentUser} />
         )}
         {active === "My Reports" && (
-          <MyReports currentUser={currentUser} setActive={setActive} />
+          <MyReports currentUser={currentUser} setActive={navigate} />
+        )}
+        {active === "My Waitlist" && (
+          <MyWaitlist currentUser={currentUser} setActive={navigate} />
+        )}
+        {active === "Info & Rules" && (
+          <InfoRules />
         )}
 
         {showReport && (
           <ReportModal
             onClose={() => setShowReport(false)}
             currentUser={currentUser}
-            setActive={setActive}
+            setActive={navigate}
+          />
+        )}
+
+        {showScanner && (
+          <QRScanner
+            onScanSuccess={handleScanSuccess}
+            onClose={() => setShowScanner(false)}
           />
         )}
       </div>
