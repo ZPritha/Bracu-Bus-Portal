@@ -14,6 +14,8 @@ const bookingSchema = new mongoose.Schema({
   selected_pickup_time: { type: String },
   selected_departure_time: { type: String },
   payment_method: { type: String, enum: ['bkash', 'nagad', 'cash', 'sslcommerz'], required: true },
+  payment_status: { type: String, enum: ['pending', 'paid'], default: 'pending' },
+  arrival_status: { type: String, enum: ['arrived', 'not arrived'], default: 'not arrived' },
   status: { type: String, enum: ['confirmed', 'cancelled'], default: 'confirmed' }
 }, { timestamps: true });
 

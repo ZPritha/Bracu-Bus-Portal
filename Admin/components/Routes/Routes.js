@@ -2,7 +2,7 @@ function Routes({ setActive }) {
   const [tab, setTab] = React.useState("routes");
 
   return (
-    <div className="rm-wrapper">
+    <div className="content">
       <div className="rm-tab-bar">
         <button
           className={tab === "routes" ? "tab active" : "tab"}

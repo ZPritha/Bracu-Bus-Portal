@@ -1,148 +1,451 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Bracu Bus Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      
-      body {
-        font-family: 'Nunito', sans-serif;
-        min-height: 100vh;
-        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BRACU Bus Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-      .landing-box {
-        background: white;
-        border-radius: 24px;
-        padding: 3rem 2.5rem;
-        width: 100%;
-        max-width: 440px;
-        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
-        text-align: center;
-      }
+    :root {
+      --green:   #2d6a4f;
+      --green-light: #52b788;
+      --cream:   #fdf8f0;
+      --ink:     #1a1a1a;
+      --muted:   #6b7070;
+      --accent:  #c84b31;
+      --gold:    #e6a817;
+    }
 
-      .logo-row {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.85rem;
-        margin-bottom: 0.5rem;
-      }
+    html, body {
+      height: 100%;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--ink);
+      overflow: hidden;
+    }
 
-      .logo-row img {
-        width: 56px;
-      }
+    /* ── Full-bleed hero photo ── */
+    .hero {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+    }
 
-      .portal-title {
-        font-size: 1.5rem;
-        font-weight: 800;
-        color: #1e293b;
-        text-align: left;
-        line-height: 1.2;
-      }
+    .hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 30%;
+      filter: brightness(0.62) saturate(1.1);
+      transform: scale(1.04);
+      animation: slowZoom 22s ease-in-out infinite alternate;
+    }
 
-      .portal-subtitle {
-        font-size: 0.82rem;
-        color: #6b7280;
-        text-align: left;
-      }
+    @keyframes slowZoom {
+      from { transform: scale(1.04); }
+      to   { transform: scale(1.10); }
+    }
 
-      .divider {
-        border: none;
-        border-top: 1px solid #f3f4f6;
-        margin: 1.75rem 0;
-      }
+    /* ── Overlay gradient ── */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      background:
+        linear-gradient(to bottom,
+          rgba(10,20,15,0.18) 0%,
+          rgba(10,20,15,0.08) 30%,
+          rgba(10,20,15,0.70) 62%,
+          rgba(10,20,15,0.97) 100%
+        );
+    }
 
-      .choose-label {
-        font-size: 0.95rem;
-        font-weight: 700;
-        color: #374151;
-        margin-bottom: 1.25rem;
-      }
+    /* ── Layout ── */
+    .page {
+      position: relative;
+      z-index: 2;
+      height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      padding: 0 clamp(1.5rem, 5vw, 5rem);
+    }
 
-      .role-cards {
-        display: flex;
-        gap: 1rem;
-      }
+    /* ── Top bar ── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.75rem 0 1rem;
+      animation: fadeDown 0.9s ease both;
+    }
 
-      .role-card {
-        flex: 1;
-        padding: 2rem 1rem;
-        border: 2px solid #e5e7eb;
-        border-radius: 18px;
-        cursor: pointer;
-        text-decoration: none;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        background: #f9fafb;
-        transition: all 0.2s ease;
-      }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
 
-      .role-card:hover {
-        border-color: #4f46e5;
-        background: #ede9fe;
-        transform: translateY(-4px);
-        box-shadow: 0 10px 24px rgba(79, 70, 229, 0.18);
-      }
+    .brand-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--cream);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    }
 
-      .role-icon {
-        font-size: 2.8rem;
-        margin-bottom: 0.85rem;
-      }
+    /* Try to load the logo; fallback to emoji */
+    .brand-logo img {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+    }
 
-      .role-name {
-        font-size: 1.05rem;
-        font-weight: 800;
-        color: #1e293b;
-        margin-bottom: 0.3rem;
-      }
+    .brand-name {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.15rem;
+      color: var(--cream);
+      letter-spacing: 0.02em;
+      line-height: 1.2;
+    }
 
-      .role-desc {
-        font-size: 0.78rem;
-        color: #6b7280;
-        line-height: 1.4;
-      }
+    .brand-sub {
+      font-size: 0.7rem;
+      color: rgba(253,248,240,0.55);
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
 
-      .footer-text {
-        margin-top: 2rem;
-        font-size: 0.78rem;
-        color: #9ca3af;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="landing-box">
-      <div class="logo-row">
-        <img src="Student/brac.png" alt="BRACU Logo" />
+    .topbar-right {
+      font-size: 0.75rem;
+      color: rgba(253,248,240,0.45);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    /* ── Centre content ── */
+    .centre {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-end;
+      padding-bottom: 3.5rem;
+      max-width: 680px;
+      animation: fadeUp 1s 0.25s ease both;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(253,248,240,0.1);
+      border: 1px solid rgba(253,248,240,0.18);
+      backdrop-filter: blur(8px);
+      padding: 0.35rem 0.9rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--green-light);
+      margin-bottom: 1.25rem;
+    }
+
+    .eyebrow span.dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green-light);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.5; transform: scale(0.7); }
+    }
+
+    .headline {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.6rem, 6vw, 4.2rem);
+      color: var(--cream);
+      line-height: 1.08;
+      letter-spacing: -0.01em;
+      margin-bottom: 1.1rem;
+    }
+
+    .headline em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .tagline {
+      font-size: 1rem;
+      color: rgba(253,248,240,0.62);
+      font-weight: 300;
+      line-height: 1.6;
+      max-width: 460px;
+      margin-bottom: 2.8rem;
+    }
+
+    /* ── Role cards ── */
+    .cards {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      position: relative;
+      text-decoration: none;
+      background: rgba(253,248,240,0.16);
+      border: 1px solid rgba(253,248,240,0.30);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-radius: 20px;
+      padding: 1.6rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      min-width: 190px;
+      overflow: hidden;
+      transition: background 0.28s, border-color 0.28s, transform 0.28s;
+      cursor: pointer;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      opacity: 0;
+      transition: opacity 0.28s;
+    }
+
+    .card.student::before {
+      background: linear-gradient(135deg, rgba(82,183,136,0.22), rgba(45,106,79,0.12));
+    }
+
+    .card.admin::before {
+      background: linear-gradient(135deg, rgba(200,75,49,0.22), rgba(230,168,23,0.12));
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(253,248,240,0.55);
+      background: rgba(253,248,240,0.24);
+    }
+
+    .card:hover::before { opacity: 1; }
+
+    .card-icon {
+      font-size: 1.8rem;
+      line-height: 1;
+      margin-bottom: 0.2rem;
+    }
+
+    .card-role {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.2rem;
+      color: var(--cream);
+    }
+
+    .card-desc {
+      font-size: 0.78rem;
+      color: rgba(253,248,240,0.52);
+      line-height: 1.45;
+      font-weight: 300;
+    }
+
+    .card-arrow {
+      position: absolute;
+      right: 1.25rem;
+      bottom: 1.25rem;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: rgba(253,248,240,0.12);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem;
+      color: rgba(253,248,240,0.55);
+      transition: background 0.2s, color 0.2s, transform 0.2s;
+    }
+
+    .card:hover .card-arrow {
+      background: rgba(253,248,240,0.22);
+      color: var(--cream);
+      transform: translate(2px,-2px);
+    }
+
+    /* ── Bottom bar ── */
+    .bottombar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 0 1.5rem;
+      border-top: 1px solid rgba(253,248,240,0.08);
+      animation: fadeUp 1s 0.5s ease both;
+    }
+
+    .footer-left {
+      font-size: 0.72rem;
+      color: rgba(253,248,240,0.32);
+      letter-spacing: 0.05em;
+    }
+
+    .footer-right {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .footer-right a {
+      font-size: 0.72rem;
+      color: rgba(253,248,240,0.32);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: color 0.2s;
+    }
+
+    .footer-right a:hover { color: rgba(253,248,240,0.65); }
+
+    /* ── Decorative folk art strip ── */
+    .folk-strip {
+      position: fixed;
+      left: 0; right: 0;
+      top: 0;
+      height: 4px;
+      z-index: 10;
+      background: linear-gradient(90deg,
+        #e63946, #f4a261, #2a9d8f, #e9c46a,
+        #4361ee, #e63946, #f4a261, #2a9d8f);
+      background-size: 200%;
+      animation: shimmer 6s linear infinite;
+    }
+
+    @keyframes shimmer {
+      from { background-position: 0% 50%; }
+      to   { background-position: 200% 50%; }
+    }
+
+    /* ── Photo credit ── */
+    .photo-credit {
+      position: fixed;
+      bottom: 5.5rem;
+      right: clamp(1.5rem, 5vw, 5rem);
+      z-index: 3;
+      font-size: 0.65rem;
+      color: rgba(253,248,240,0.28);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      writing-mode: vertical-rl;
+      animation: fadeUp 1s 0.8s ease both;
+    }
+
+    /* ── Keyframes ── */
+    @keyframes fadeDown {
+      from { opacity:0; transform:translateY(-18px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(18px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 520px) {
+      html, body { overflow: auto; }
+      .page { height: auto; min-height: 100vh; padding: 0 1.25rem; }
+      .cards { flex-direction: column; }
+      .card { min-width: unset; }
+      .topbar-right, .footer-right { display: none; }
+      .photo-credit { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Colour bar at very top -->
+  <div class="folk-strip"></div>
+
+  <!-- Background photo -->
+  <div class="hero">
+    <img
+      src="brac.jpg"
+      alt="BRAC University courtyard with folk art"
+      onerror="this.style.display='none'"
+    />
+  </div>
+  <div class="overlay"></div>
+
+  <!-- Photo credit -->
+  <div class="photo-credit">BRACU Campus · Aerial View</div>
+
+  <!-- Main layout -->
+  <div class="page">
+
+    <!-- Top nav bar -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-logo">
+          <img src="Student/brac.png" alt="BRACU" onerror="this.innerHTML='🎓'"/>
+        </div>
         <div>
-          <div class="portal-title">Bracu Bus Portal</div>
-          <div class="portal-subtitle">BRAC University Transportation</div>
+          <div class="brand-name">BRAC University</div>
+          <div class="brand-sub">Transportation Portal</div>
         </div>
       </div>
+      <div class="topbar-right">Dhaka, Bangladesh &nbsp;·&nbsp; 2026</div>
+    </header>
 
-      <hr class="divider" /> 
-
-      <p class="choose-label">Select your role to continue</p>
-
-      <div class="role-cards">
-        <a class="role-card" href="Student/dashboard1.html">
-          <div class="role-icon">🎓</div>
-          <div class="role-name">Student</div>
-          <div class="role-desc">Login or register to access bus services</div>
-        </a>
-        <a class="role-card" href="Admin/dashboard1.html">
-          <div class="role-icon">🛡️</div>
-          <div class="role-name">Admin</div>
-          <div class="role-desc">Manage routes, schedules & portal</div>
-        </a>
+    <!-- Hero text + role cards -->
+    <main class="centre">
+      <div class="eyebrow">
+        <span class="dot"></span>
+        Bus Scheduling System
       </div>
 
-      <p class="footer-text">© 2026 BRAC University — All rights reserved</p>
-    </div>
-  </body>
+      <h1 class="headline">
+        Your campus.<br/>
+        Your <em>commute,</em><br/>
+        simplified.
+      </h1>
+
+      <p class="tagline">
+        Real-time schedules, route management, and seat tracking —
+        built for the BRACU community.
+      </p>
+
+      <div class="cards">
+        <a class="card student" href="Student/dashboard1.html">
+          <div class="card-icon">🎓</div>
+          <div class="card-role">Student</div>
+          <div class="card-desc">View schedules, book seats &amp; track your bus</div>
+          <div class="card-arrow">↗</div>
+        </a>
+
+        <a class="card admin" href="Admin/dashboard1.html">
+          <div class="card-icon">🛡️</div>
+          <div class="card-role">Admin</div>
+          <div class="card-desc">Manage routes, drivers &amp; portal settings</div>
+          <div class="card-arrow">↗</div>
+        </a>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bottombar">
+      <div class="footer-left">© 2026 BRAC University — All rights reserved</div>
+      <nav class="footer-right">
+        <a href="#">Help</a>
+        <a href="#">Privacy</a>
+        <a href="#">Contact</a>
+      </nav>
+    </footer>
+
+  </div>
+</body>
 </html>

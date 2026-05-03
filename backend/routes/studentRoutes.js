@@ -44,4 +44,15 @@ router.get('/:studentId/dismissed-announcements', async (req, res) => {
   }
 });
 
+// Get student profile
+router.get('/:studentId', async (req, res) => {
+  try {
+    const student = await Student.findOne({ studentId: req.params.studentId });
+    if (!student) return res.status(404).json({ error: 'Student not found.' });
+    res.json(student);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;

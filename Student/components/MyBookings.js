@@ -141,6 +141,16 @@ function MyBookings({ currentUser, setActive }) {
                     {new Date(b.createdAt).toLocaleDateString()}
                   </span>
                 </div>
+                <div>
+                  <span style={{ color: '#888' }}>Arrival:</span>
+                  <span style={{ 
+                    fontWeight: 800, 
+                    marginLeft: '6px', 
+                    color: b.arrival_status === 'arrived' ? '#00884a' : '#ff9800'
+                  }}>
+                    {b.arrival_status === 'arrived' ? '✅ Arrived' : '⏳ Not Arrived'}
+                  </span>
+                </div>
               </div>
 
               {canCancelBooking(b) && (

@@ -1,11 +1,16 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
+
+require('./models/Student');
+
+require('./scripts/busSimulator').startSimulator();
 
 const app = express();
 app.use(cors());
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
@@ -23,10 +28,9 @@ const lostFoundRoutes = require('./routes/lostFoundRoutes');
 app.use('/api/lostfound', lostFoundRoutes);
 
 const notificationRoutes = require('./routes/notificationRoutes');
-app.use('/api/notifications',  notificationRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Teammate's routes
-
 const feedbackRoutes = require('./routes/feedbackRoutes');
 app.use('/api/feedbacks', feedbackRoutes);
 
@@ -39,8 +43,7 @@ app.use('/api/stoppages', stoppageRoutes);
 const busRoutes = require('./routes/busRoutes');
 app.use('/api/buses', busRoutes);
 
-//ishika-junnabi
-
+// ishika-junnabi
 const bookingRoutes = require('./routes/bookingRoutes');
 app.use('/api/bookings', bookingRoutes);
 
@@ -65,11 +68,32 @@ app.use('/api/reports', reportRoutes);
 const sosRoutes = require('./routes/sosRoutes');
 app.use('/api/sos', sosRoutes);
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log('MongoDB connected');
-    app.listen(process.env.PORT || 9255, () => {
-      console.log(`Server running on port ${process.env.PORT || 9255}`);
+const busLocationRoutes = require('./routes/busLocationRoutes');
+app.use('/api/bus-locations', busLocationRoutes);
+
+
+require('./scripts/busSimulator');  // loads the module
+app.get('/', (req, res) => res.json({ message: 'Bracu Bus API is running!' }));
+
+const PORT = process.env.PORT || 9255;
+
+async function startServer() {
+  try {
+    await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 10000,
+      socketTimeoutMS: 45000,
+      family: 4
     });
-  })
-  .catch(err => console.log(err));
+    console.log('MongoDB connected!');
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+    const { startSimulator } = require('./scripts/busSimulator');
+    startSimulator();
+
+
+  } catch (err) {
+    console.log('Connection error:', err.message);
+  }
+}
+
+startServer();
