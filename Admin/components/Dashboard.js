@@ -41,12 +41,12 @@ function AnnouncementList({ announcements, onEdit, onDelete }) {
   }
 
   const categoryLabels = {
-    bus_delay:       '🚌 Bus Delay',
-    route_change:    '🛑 Route Change',
-    schedule_update: '⏰ Schedule Update',
-    maintenance:     '🔧 Maintenance',
-    safety_notice:   '⚠️ Safety Notice',
-    general_notice:  '📢 General Notice',
+    bus_delay: "🚌 Bus Delay",
+    route_change: "🛑 Route Change",
+    schedule_update: "⏰ Schedule Update",
+    maintenance: "🔧 Maintenance",
+    safety_notice: "⚠️ Safety Notice",
+    general_notice: "📢 General Notice",
   };
 
   return (
@@ -55,7 +55,7 @@ function AnnouncementList({ announcements, onEdit, onDelete }) {
         <span>🔔</span>
         <h3>Announcements</h3>
       </div>
-      {announcements.map(a => (
+      {announcements.map((a) => (
         <div className="announcement-item" key={a._id}>
           <div className="announcement-item-top">
             <span className="announcement-item-title">{a.title}</span>
@@ -74,12 +74,11 @@ function AnnouncementList({ announcements, onEdit, onDelete }) {
             </div>
           </div>
           <div className="announcement-item-message">{a.message}</div>
-          <div className="announcement-item-time">🕒 {timeAgo(a.createdAt)}</div>
+          <div className="announcement-item-time">
+            🕒 {timeAgo(a.createdAt)}
+          </div>
           <div className="announcement-item-actions">
-            <button
-              className="btn-edit-announcement"
-              onClick={() => onEdit(a)}
-            >
+            <button className="btn-edit-announcement" onClick={() => onEdit(a)}>
               ✏️ Edit
             </button>
             <button
@@ -99,21 +98,21 @@ function DraftList({ drafts, onPublish, onDelete }) {
   if (drafts.length === 0) return null;
 
   const categoryLabels = {
-    bus_delay:       '🚌 Bus Delay',
-    route_change:    '🛑 Route Change',
-    schedule_update: '⏰ Schedule Update',
-    maintenance:     '🔧 Maintenance',
-    safety_notice:   '⚠️ Safety Notice',
-    general_notice:  '📢 General Notice',
+    bus_delay: "🚌 Bus Delay",
+    route_change: "🛑 Route Change",
+    schedule_update: "⏰ Schedule Update",
+    maintenance: "🔧 Maintenance",
+    safety_notice: "⚠️ Safety Notice",
+    general_notice: "📢 General Notice",
   };
 
   return (
-    <div className="announcement-card" style={{ marginTop: '16px' }}>
+    <div className="announcement-card" style={{ marginTop: "16px" }}>
       <div className="announcement-card-header">
         <span>📝</span>
         <h3>Drafts</h3>
       </div>
-      {drafts.map(d => (
+      {drafts.map((d) => (
         <div className="announcement-item draft-item" key={d._id}>
           <div className="announcement-item-top">
             <span className="announcement-item-title">{d.title}</span>
@@ -153,55 +152,60 @@ function DraftList({ drafts, onPublish, onDelete }) {
   );
 }
 
-function Dashboard({ setActive, announcements, addAnnouncement, setAnnouncements }) {
-  const [drafts, setDrafts]         = React.useState([]);
-  const [editData, setEditData]     = React.useState(null);
+function Dashboard({
+  setActive,
+  announcements,
+  addAnnouncement,
+  setAnnouncements,
+}) {
+  const [drafts, setDrafts] = React.useState([]);
+  const [editData, setEditData] = React.useState(null);
 
   function fetchDrafts() {
-    fetch('http://localhost:9255/api/announcements/drafts')
-      .then(res => res.json())
-      .then(data => setDrafts(data))
-      .catch(err => console.log(err));
+    fetch("https://bracu-bus-portal.onrender.com/api/announcements/drafts")
+      .then((res) => res.json())
+      .then((data) => setDrafts(data))
+      .catch((err) => console.log(err));
   }
 
   React.useEffect(() => {
-    fetchDrafts();
+    fetchDrhttps://bracu-bus-portal.onrender.com
   }, []);
 
   function handlePublishDraft(id) {
-    fetch(`http://localhost:9255/api/announcements/${id}/publish`, {
-      method: 'PATCH'
+    fetch(`https://bracu-bus-portal.onrender.com/api/announcements/${id}/publish`, {
+      method: "PATCH",
     })
-      .then(res => res.json())
-      .then(data => {
-        setDrafts(prev => prev.filter(d => d._id !== id));
+      .then((res) => res.json())
+      .then((data) => {
+        setDrafts((prev) => prev.filter((d) => d._id !== id));
         addAnnouncement(data.title, data.message, data._id);
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   }
 
   function handleDeleteDraft(id) {
-    fetch(`http://localhost:9255/api/announcements/${id}`, {
-      method: 'DELETE'
+    fetch(`https://bracu-bus-portal.onrender.com/api/announcements/${id}`, {
+      method: "DELETE",
     })
-      .then(() => setDrafts(prev => prev.filter(d => d._id !== id)))
-      .catch(err => console.log(err));
+      .then(() => setDrafts((prev) => prev.filter((d) => d._id !== id)))
+      .catch((err) => console.log(err));
   }
 
   function handleDeleteAnnouncement(id) {
-    if (!window.confirm('Delete this announcement?')) return;
-    fetch(`http://localhost:9255/api/announcements/${id}`, {
-      method: 'DELETE'
+    if (!window.confirm("Delete this announcement?")) return;
+    fetch(`https://bracu-bus-portal.onrender.com/api/announcements/${id}`, {
+      method: "DELETE",
     })
       .then(() => {
-        setAnnouncements(prev => prev.filter(a => a._id !== id));
+        setAnnouncements((prev) => prev.filter((a) => a._id !== id));
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   }
 
   function handleEditSave(updatedData) {
-    setAnnouncements(prev =>
-      prev.map(a => a._id === updatedData._id ? updatedData : a)
+    setAnnouncements((prev) =>
+      prev.map((a) => (a._id === updatedData._id ? updatedData : a)),
     );
     setEditData(null);
   }
@@ -239,5 +243,3 @@ function Dashboard({ setActive, announcements, addAnnouncement, setAnnouncements
     </div>
   );
 }
-
-

@@ -2,7 +2,11 @@ function FeedbackForm({ currentUser }) {
   const [routes, setRoutes] = React.useState([]);
   const [loadingRoutes, setLoadingRoutes] = React.useState(true);
   const [routeError, setRouteError] = React.useState("");
-  const [toast, setToast] = React.useState({ show: false, message: "", type: "" });
+  const [toast, setToast] = React.useState({
+    show: false,
+    message: "",
+    type: "",
+  });
 
   const showToast = (message, type = "success") => {
     setToast({ show: true, message, type });
@@ -13,15 +17,18 @@ function FeedbackForm({ currentUser }) {
     name: currentUser ? currentUser.name : "",
     studentId: currentUser ? currentUser.studentId : "",
     busRoute: "",
+    behaviour: "",
     message: "",
     rating: 0,
-    attachment: null
+    attachment: null,
   });
 
   React.useEffect(() => {
     const fetchRoutes = async () => {
       try {
-        const response = await fetch("http://localhost:9255/api/routes");
+        const response = await fetch(
+          "https://bracu-bus-portal.onrender.com/api/routes",
+        );
         if (!response.ok) throw new Error("Failed to fetch routes");
         const data = await response.json();
         setRoutes(data);
@@ -38,18 +45,22 @@ function FeedbackForm({ currentUser }) {
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "attachment") {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        attachment: files && files[0] ? files[0] : null
+        attachment: files && files[0] ? files[0] : null,
       }));
       return;
     }
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async () => {
     if (!formData.busRoute) {
       showToast("Please select a bus route.", "error");
+      return;
+    }
+    if (!formData.behaviour) {
+      showToast("Please select a behaviour.", "error");
       return;
     }
     if (!formData.message) {
@@ -66,16 +77,20 @@ function FeedbackForm({ currentUser }) {
       payload.append("name", formData.name);
       payload.append("studentId", formData.studentId);
       payload.append("busRoute", formData.busRoute);
+      payload.append("behaviour", formData.behaviour);
       payload.append("message", formData.message);
       payload.append("rating", formData.rating);
       if (formData.attachment) {
         payload.append("attachment", formData.attachment);
       }
 
-      const response = await fetch("http://localhost:9255/api/feedbacks", {
-        method: "POST",
-        body: payload
-      });
+      const response = await fetch(
+        "https://bracu-bus-portal.onrender.com/api/feedbacks",
+        {
+          method: "POST",
+          body: payload,
+        },
+      );
 
       if (!response.ok) throw new Error("Server error: " + response.status);
 
@@ -85,11 +100,11 @@ function FeedbackForm({ currentUser }) {
         name: currentUser ? currentUser.name : "",
         studentId: currentUser ? currentUser.studentId : "",
         busRoute: "",
+        behaviour: "",
         message: "",
         rating: 0,
-        attachment: null
+        attachment: null,
       });
-
     } catch (error) {
       console.error("Submit error:", error);
       showToast("Failed to submit feedback. Please try again.", "error");
@@ -97,7 +112,7 @@ function FeedbackForm({ currentUser }) {
   };
 
   return (
-    <div style={{ paddingBottom: '100px' }}>
+    <div style={{ paddingBottom: "100px" }}>
       <label className="field-label">
         Name
         <input
@@ -132,7 +147,7 @@ function FeedbackForm({ currentUser }) {
           <option value="">
             {loadingRoutes ? "Loading routes..." : "Select Bus Route"}
           </option>
-          {routes.map(route => (
+          {routes.map((route) => (
             <option key={route._id} value={route.route_name}>
               {route.route_name}
             </option>
@@ -141,6 +156,21 @@ function FeedbackForm({ currentUser }) {
       </label>
 
       {routeError && <p className="error-text">{routeError}</p>}
+
+      <label className="field-label">
+        Behaviour
+        <select
+          className="text-input"
+          name="behaviour"
+          value={formData.behaviour}
+          onChange={handleChange}
+        >
+          <option value="">{"Select Behaviour"}</option>
+          <option value="Polite">Polite</option>
+          <option value="Naughty">Naughty</option>
+          <option value="Rude">Rude</option>
+        </select>
+      </label>
 
       <label className="field-label">
         Feedback Message
@@ -157,11 +187,11 @@ function FeedbackForm({ currentUser }) {
       <label className="field-label">
         Rating
         <div className="star-container">
-          {[1, 2, 3, 4, 5].map(star => (
+          {[1, 2, 3, 4, 5].map((star) => (
             <span
               key={star}
               className={star <= formData.rating ? "star active" : "star"}
-              onClick={() => setFormData(prev => ({ ...prev, rating: star }))}
+              onClick={() => setFormData((prev) => ({ ...prev, rating: star }))}
             >
               ★
             </span>
@@ -189,9 +219,7 @@ function FeedbackForm({ currentUser }) {
       </button>
 
       {toast.show && (
-        <div className={`toast ${toast.type}`}>
-          {toast.message}
-        </div>
+        <div className={`toast ${toast.type}`}>{toast.message}</div>
       )}
     </div>
   );

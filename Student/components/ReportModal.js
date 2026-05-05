@@ -14,7 +14,7 @@
   const issues = ['Harassment', 'Safety Concern', 'Inappropriate Behaviour', 'Other'];
 
   React.useEffect(() => {
-    fetch('http://localhost:9255/api/buses')
+    fetch('https://bracu-bus-portal.onrender.com/api/buses')
       .then(r => r.json())
       .then(data => setBuses(data))
       .catch(() => setError('Could not load buses.'));
@@ -42,7 +42,7 @@
 setTimeout(() => { onClose(); setActive('My Reports'); }, 1500);
     setError('');
     try {
-      const res = await fetch('http://localhost:9255/api/reports', {
+      const res = await fetch('https://bracu-bus-portal.onrender.com/api/reports', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -142,38 +142,43 @@ setTimeout(() => { onClose(); setActive('My Reports'); }, 1500);
   );
 } */
 
- function ReportModal({ onClose, currentUser, setActive }) {
-  const [selectedIssue, setSelectedIssue] = React.useState('');
+function ReportModal({ onClose, currentUser, setActive }) {
+  const [selectedIssue, setSelectedIssue] = React.useState("");
   const [buses, setBuses] = React.useState([]);
-  const [selectedBus, setSelectedBus] = React.useState('');
-  const [autoRoute, setAutoRoute] = React.useState('');
-  const [autoRouteId, setAutoRouteId] = React.useState('');
-  const [description, setDescription] = React.useState('');
-  const [image, setImage] = React.useState(null);           // ← new
+  const [selectedBus, setSelectedBus] = React.useState("");
+  const [autoRoute, setAutoRoute] = React.useState("");
+  const [autoRouteId, setAutoRouteId] = React.useState("");
+  const [description, setDescription] = React.useState("");
+  const [image, setImage] = React.useState(null); // ← new
   const [imagePreview, setImagePreview] = React.useState(null); // ← new
   const [submitting, setSubmitting] = React.useState(false);
   const [submitted, setSubmitted] = React.useState(false);
-  const [error, setError] = React.useState('');
+  const [error, setError] = React.useState("");
 
-  const issues = ['Harassment', 'Safety Concern', 'Inappropriate Behaviour', 'Other'];
+  const issues = [
+    "Harassment",
+    "Safety Concern",
+    "Inappropriate Behaviour",
+    "Other",
+  ];
 
   React.useEffect(() => {
-    fetch('http://localhost:9255/api/buses')
-      .then(r => r.json())
-      .then(data => setBuses(data))
-      .catch(() => setError('Could not load buses.'));
+    fetch("https://bracu-bus-portal.onrender.com/api/buses")
+      .then((r) => r.json())
+      .then((data) => setBuses(data))
+      .catch(() => setError("Could not load buses."));
   }, []);
 
   const handleBusChange = (e) => {
     const busId = e.target.value;
     setSelectedBus(busId);
-    const found = buses.find(b => b._id === busId);
+    const found = buses.find((b) => b._id === busId);
     if (found && found.route) {
       setAutoRoute(found.route.route_name);
       setAutoRouteId(found.route._id);
     } else {
-      setAutoRoute('');
-      setAutoRouteId('');
+      setAutoRoute("");
+      setAutoRouteId("");
     }
   };
 
@@ -182,12 +187,12 @@ setTimeout(() => { onClose(); setActive('My Reports'); }, 1500);
     const file = e.target.files[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) {
-      setError('Image must be under 5MB.');
+      setError("Image must be under 5MB.");
       return;
     }
     setImage(file);
     setImagePreview(URL.createObjectURL(file));
-    setError('');
+    setError("");
   };
 
   const removeImage = () => {
@@ -198,29 +203,35 @@ setTimeout(() => { onClose(); setActive('My Reports'); }, 1500);
   // ← updated: uses FormData instead of JSON
   const handleSubmit = async () => {
     if (!selectedIssue || !selectedBus || !description) {
-      setError('Please fill in all required fields.');
+      setError("Please fill in all required fields.");
       return;
     }
     setSubmitting(true);
-    setError('');
+    setError("");
     try {
       const formData = new FormData();
-      formData.append('student_id', currentUser.studentId);
-      formData.append('issue_type', selectedIssue);
-      formData.append('bus', selectedBus);
-      formData.append('route', autoRouteId);
-      formData.append('description', description);
-      if (image) formData.append('image', image);
+      formData.append("student_id", currentUser.studentId);
+      formData.append("issue_type", selectedIssue);
+      formData.append("bus", selectedBus);
+      formData.append("route", autoRouteId);
+      formData.append("description", description);
+      if (image) formData.append("image", image);
 
-      const res = await fetch('http://localhost:9255/api/reports', {
-        method: 'POST',
-        body: formData  // ← no Content-Type header, browser sets it automatically
-      });
-      if (!res.ok) throw new Error('Failed');
+      const res = await fetch(
+        "https://bracu-bus-portal.onrender.com/api/reports",
+        {
+          method: "POST",
+          body: formData, // ← no Content-Type header, browser sets it automatically
+        },
+      );
+      if (!res.ok) throw new Error("Failed");
       setSubmitted(true);
-      setTimeout(() => { onClose(); setActive('My Reports'); }, 1500);
+      setTimeout(() => {
+        onClose();
+        setActive("My Reports");
+      }, 1500);
     } catch {
-      setError('Submission failed. Please try again.');
+      setError("Submission failed. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -228,15 +239,19 @@ setTimeout(() => { onClose(); setActive('My Reports'); }, 1500);
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="report-modal" onClick={e => e.stopPropagation()}>
-        <button className="modal-close" onClick={onClose}>✕</button>
+      <div className="report-modal" onClick={(e) => e.stopPropagation()}>
+        <button className="modal-close" onClick={onClose}>
+          ✕
+        </button>
 
         {submitted ? (
           <div className="report-success">
             <div className="success-icon">✅</div>
             <h3>Report Submitted</h3>
             <p>Your report has been received and is confidential.</p>
-            <button className="btn-submit" onClick={onClose}>Close</button>
+            <button className="btn-submit" onClick={onClose}>
+              Close
+            </button>
           </div>
         ) : (
           <>
@@ -244,18 +259,22 @@ setTimeout(() => { onClose(); setActive('My Reports'); }, 1500);
 
             <div className="form-group">
               <label>Student ID</label>
-              <div className="form-input route-display">{currentUser?.studentId || 'Not found'}</div>
+              <div className="form-input route-display">
+                {currentUser?.studentId || "Not found"}
+              </div>
             </div>
 
             <div className="form-group">
               <label>Report Issue</label>
               <div className="issue-grid">
-                {issues.map(issue => (
+                {issues.map((issue) => (
                   <button
                     key={issue}
-                    className={`issue-btn ${selectedIssue === issue ? 'active' : ''}`}
+                    className={`issue-btn ${selectedIssue === issue ? "active" : ""}`}
                     onClick={() => setSelectedIssue(issue)}
-                  >{issue}</button>
+                  >
+                    {issue}
+                  </button>
                 ))}
               </div>
             </div>
@@ -263,13 +282,21 @@ setTimeout(() => { onClose(); setActive('My Reports'); }, 1500);
             <div className="form-group">
               <label>Bus Information</label>
               <div className="bus-info-row">
-                <select className="form-select" value={selectedBus} onChange={handleBusChange}>
+                <select
+                  className="form-select"
+                  value={selectedBus}
+                  onChange={handleBusChange}
+                >
                   <option value="">Select Bus Number</option>
-                  {buses.map(bus => (
-                    <option key={bus._id} value={bus._id}>{bus.bus_number}</option>
+                  {buses.map((bus) => (
+                    <option key={bus._id} value={bus._id}>
+                      {bus.bus_number}
+                    </option>
                   ))}
                 </select>
-                <div className="form-input route-display">{autoRoute || 'Route auto-filled'}</div>
+                <div className="form-input route-display">
+                  {autoRoute || "Route auto-filled"}
+                </div>
               </div>
             </div>
 
@@ -278,7 +305,7 @@ setTimeout(() => { onClose(); setActive('My Reports'); }, 1500);
               <textarea
                 className="form-textarea"
                 value={description}
-                onChange={e => setDescription(e.target.value)}
+                onChange={(e) => setDescription(e.target.value)}
                 placeholder="Please describe the incident in detail.."
                 rows={4}
               />
@@ -286,13 +313,18 @@ setTimeout(() => { onClose(); setActive('My Reports'); }, 1500);
 
             {/* ← new: image upload section */}
             <div className="form-group">
-              <label>Upload Image <span style={{fontWeight:400, color:'#999'}}>(optional, max 5MB)</span></label>
+              <label>
+                Upload Image{" "}
+                <span style={{ fontWeight: 400, color: "#999" }}>
+                  (optional, max 5MB)
+                </span>
+              </label>
               {!imagePreview ? (
                 <label className="image-upload-box">
                   <input
                     type="file"
                     accept="image/*"
-                    style={{ display: 'none' }}
+                    style={{ display: "none" }}
                     onChange={handleImageChange}
                   />
                   <span className="upload-icon">📷</span>
@@ -301,8 +333,14 @@ setTimeout(() => { onClose(); setActive('My Reports'); }, 1500);
                 </label>
               ) : (
                 <div className="image-preview-wrap">
-                  <img src={imagePreview} className="image-preview" alt="preview" />
-                  <button className="image-remove-btn" onClick={removeImage}>✕ Remove</button>
+                  <img
+                    src={imagePreview}
+                    className="image-preview"
+                    alt="preview"
+                  />
+                  <button className="image-remove-btn" onClick={removeImage}>
+                    ✕ Remove
+                  </button>
                 </div>
               )}
             </div>
@@ -314,8 +352,12 @@ setTimeout(() => { onClose(); setActive('My Reports'); }, 1500);
               <strong>Your report is confidential</strong>
             </div>
 
-            <button className="btn-submit" onClick={handleSubmit} disabled={submitting}>
-              {submitting ? 'Submitting...' : 'Submit'}
+            <button
+              className="btn-submit"
+              onClick={handleSubmit}
+              disabled={submitting}
+            >
+              {submitting ? "Submitting..." : "Submit"}
             </button>
           </>
         )}
@@ -323,4 +365,3 @@ setTimeout(() => { onClose(); setActive('My Reports'); }, 1500);
     </div>
   );
 }
-

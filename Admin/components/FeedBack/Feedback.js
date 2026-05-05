@@ -3,13 +3,13 @@ function Feedback({ setActive }) {
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    fetch("http://localhost:9255/api/feedbacks")
-      .then(res => res.json())
-      .then(data => {
+    fetch("https://bracu-bus-portal.onrender.com/api/feedbacks")
+      .then((res) => res.json())
+      .then((data) => {
         setFeedbacks(data);
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("Failed to load feedbacks", err);
         setLoading(false);
       });
@@ -18,10 +18,11 @@ function Feedback({ setActive }) {
   return (
     <div className="content">
       <div className="section-label">Feedback</div>
-      {loading 
-        ? <p className="empty-text">Loading feedbacks...</p>
-        : <FeedbackList feedbacks={feedbacks} />
-      }
+      {loading ? (
+        <p className="empty-text">Loading feedbacks...</p>
+      ) : (
+        <FeedbackList feedbacks={feedbacks} />
+      )}
     </div>
   );
 }

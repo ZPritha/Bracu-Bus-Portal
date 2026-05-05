@@ -4,7 +4,9 @@ function Feedback({ setActive, currentUser }) {
 
   const fetchFeedbacks = async () => {
     try {
-      const res = await fetch("http://localhost:9255/api/feedbacks");
+      const res = await fetch(
+        "https://bracu-bus-portal.onrender.com/api/feedbacks",
+      );
       const data = await res.json();
       setFeedbacks(data);
     } catch (err) {
@@ -33,10 +35,11 @@ function Feedback({ setActive, currentUser }) {
         </button>
       </div>
 
-      {view === "form"
-        ? <FeedbackForm currentUser={currentUser} />
-        : <FeedbackList feedbacks={feedbacks} />
-      }
+      {view === "form" ? (
+        <FeedbackForm currentUser={currentUser} />
+      ) : (
+        <FeedbackList feedbacks={feedbacks} />
+      )}
     </div>
   );
 }

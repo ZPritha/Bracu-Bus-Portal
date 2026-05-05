@@ -4,7 +4,7 @@
   const [announcements, setAnnouncements] = React.useState([]);
 
   React.useEffect(() => {
-    fetch('http://localhost:9255/api/announcements')
+    fetch('https://bracu-bus-portal.onrender.com/api/announcements')
       .then(res => res.json())
       .then(data => setAnnouncements(data))
       .catch(err => console.log(err));
@@ -56,69 +56,69 @@ ReactDOM.createRoot(container).render(<App />);*/
 
 // ── Hash routing maps ──────────────────────────────────────────────────────
 const ADMIN_HASH_TO_ACTIVE = {
-  '/dashboard':  'Dashboard',
-  '/routes':     'Routes',
-  '/schedules':  'Schedules',
-  '/bookings':   'Bookings',
-  '/reports':    'Reports',
-  '/lost-found': 'Lost & Found',
-  '/feedback':   'Feedback',
+  "/dashboard": "Dashboard",
+  "/routes": "Routes",
+  "/schedules": "Schedules",
+  "/bookings": "Bookings",
+  "/reports": "Reports",
+  "/lost-found": "Lost & Found",
+  "/feedback": "Feedback",
 };
 const ADMIN_ACTIVE_TO_HASH = Object.fromEntries(
-  Object.entries(ADMIN_HASH_TO_ACTIVE).map(([h, a]) => [a, h])
+  Object.entries(ADMIN_HASH_TO_ACTIVE).map(([h, a]) => [a, h]),
 );
 
 function getAdminInitialActive() {
-  const hash = window.location.hash.replace('#', '');
-  return ADMIN_HASH_TO_ACTIVE[hash] || 'Dashboard';
+  const hash = window.location.hash.replace("#", "");
+  return ADMIN_HASH_TO_ACTIVE[hash] || "Dashboard";
 }
 
 function App() {
   const [currentAdmin, setCurrentAdmin] = React.useState(null);
-  const [active, setActive]             = React.useState(getAdminInitialActive);
+  const [active, setActive] = React.useState(getAdminInitialActive);
   const [announcements, setAnnouncements] = React.useState([]);
 
   // Navigate: update state + URL hash together
   function navigate(page) {
-    const hash = ADMIN_ACTIVE_TO_HASH[page] || '/dashboard';
-    window.history.pushState({ page }, '', '#' + hash);
+    const hash = ADMIN_ACTIVE_TO_HASH[page] || "/dashboard";
+    window.history.pushState({ page }, "", "#" + hash);
     setActive(page);
   }
 
   // Sync active when user presses browser Back / Forward
   React.useEffect(() => {
     function onHashChange() {
-      const hash = window.location.hash.replace('#', '');
-      const page = ADMIN_HASH_TO_ACTIVE[hash] || 'Dashboard';
+      const hash = window.location.hash.replace("#", "");
+      const page = ADMIN_HASH_TO_ACTIVE[hash] || "Dashboard";
       setActive(page);
     }
-    window.addEventListener('hashchange', onHashChange);
-    return () => window.removeEventListener('hashchange', onHashChange);
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
 
   React.useEffect(() => {
-    fetch('http://localhost:9255/api/announcements')
-      .then(res => res.json())
-      .then(data => setAnnouncements(data))
-      .catch(err => console.log(err));
+    fetch("https://bracu-bus-portal.onrender.com/api/announcements")
+      .then((res) => res.json())
+      .then((data) => setAnnouncements(data))
+      .catch((err) => console.log(err));
   }, []);
 
   // Set hash on login
   React.useEffect(() => {
     if (!currentAdmin) return;
     if (!window.location.hash) {
-      window.history.replaceState({}, '', '#/dashboard');
+      window.history.replaceState({}, "", "#/dashboard");
     }
   }, [currentAdmin]);
 
   function addAnnouncement(title, message, id) {
-    setAnnouncements(prev => [{ title, message, _id: id }, ...prev]);
+    setAnnouncements((prev) => [{ title, message, _id: id }, ...prev]);
   }
 
   function handleLogout() {
     setCurrentAdmin(null);
-    setActive('Dashboard');
-    window.history.replaceState({}, '', '#/dashboard');
+    setActive("Dashboard");
+    window.history.replaceState({}, "", "#/dashboard");
   }
 
   if (!currentAdmin) {
@@ -138,17 +138,19 @@ function App() {
             setAnnouncements={setAnnouncements}
           />
         )}
-        {active === "Routes"      && <Routes setActive={navigate} />}
-        {active === "Feedback"    && <Feedback setActive={navigate} />}
-        {active === "Bookings"    && <AdminBookings />}
-        {active === "Schedules"   && <ScheduleManager />}
-        {active === "Reports"     && <ReportsPage />}
-        {active === "Lost & Found" && <AdminLostFound currentAdmin={currentAdmin} />}
+        {active === "Routes" && <Routes setActive={navigate} />}
+        {active === "Feedback" && <Feedback setActive={navigate} />}
+        {active === "Bookings" && <AdminBookings />}
+        {active === "Schedules" && <ScheduleManager />}
+        {active === "Reports" && <ReportsPage />}
+        {active === "Lost & Found" && (
+          <AdminLostFound currentAdmin={currentAdmin} />
+        )}
       </div>
       <button className="chat-fab">💬</button>
     </div>
   );
 }
 
-const container = document.querySelector('.js-container');
+const container = document.querySelector(".js-container");
 ReactDOM.createRoot(container).render(<App />);

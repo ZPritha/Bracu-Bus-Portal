@@ -3,12 +3,13 @@ const Feedback = require('../models/Feedback');
 // POST /api/feedbacks
 const submitFeedback = async (req, res) => {
   try {
-    const { name, studentId, busRoute, message, rating } = req.body;
+    const { name, studentId, busRoute, behaviour, message, rating } = req.body;
 
     const feedback = new Feedback({
       name,
       studentId,
       busRoute,
+      behaviour,
       message,
       rating: Number(rating),
       attachmentName: req.file ? req.file.originalname : null,

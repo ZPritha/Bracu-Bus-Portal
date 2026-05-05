@@ -3,11 +3,15 @@ function StoppageManager() {
   const [stoppages, setStoppages] = React.useState([]);
   const [selectedRoute, setSelectedRoute] = React.useState("");
   const [editingStoppage, setEditingStoppage] = React.useState(null);
-  const [toast, setToast] = React.useState({ show: false, message: "", type: "" });
+  const [toast, setToast] = React.useState({
+    show: false,
+    message: "",
+    type: "",
+  });
 
   const [formData, setFormData] = React.useState({
     stoppage_name: "",
-    stoppage_order: ""
+    stoppage_order: "",
   });
 
   const showToast = (message, type = "success") => {
@@ -16,20 +20,20 @@ function StoppageManager() {
   };
 
   React.useEffect(() => {
-    fetch("http://localhost:9255/api/routes")
-      .then(res => res.json())
-      .then(data => setRoutes(data))
+    fetch("https://bracu-bus-portal.onrender.com/api/routes")
+      .then((res) => res.json())
+      .then((data) => setRoutes(data))
       .catch(() => showToast("Failed to load routes", "error"));
-  }, []);
+  }, []);https://bracu-bus-portal.onrender.com
 
   const fetchStoppages = () => {
     if (!selectedRoute) return;
-    fetch("http://localhost:9255/api/stoppages")
-      .then(res => res.json())
-      .then(data => {
+    fetch("https://bracu-bus-portal.onrender.com/api/stoppages")
+      .then((res) => res.json())
+      .then((data) => {
         // compare as string since ObjectId.toString() === _id string
-        const filtered = data.filter(s =>
-          s.route_id && s.route_id.toString() === selectedRoute
+        const filtered = data.filter(
+          (s) => s.route_id && s.route_id.toString() === selectedRoute,
         );
         setStoppages(filtered);
       })
@@ -41,19 +45,21 @@ function StoppageManager() {
   }, [selectedRoute]);
 
   const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = async () => {
     if (!selectedRoute) return showToast("Select a route first", "error");
-    if (!formData.stoppage_name.trim()) return showToast("Stoppage name is required", "error");
-    if (!formData.stoppage_order) return showToast("Stoppage order is required", "error");
+    if (!formData.stoppage_name.trim())
+      return showToast("Stoppage name is required", "error");
+    if (!formData.stoppage_order)
+      return showToast("Stoppage order is required", "error");
 
     try {
       const method = editingStoppage ? "PUT" : "POST";
       const url = editingStoppage
-        ? `http://localhost:9255/api/stoppages/${editingStoppage._id}`
-        : "http://localhost:9255/api/stoppages";
+        ? `https://bracu-bus-portal.onrender.com/api/stoppages/${editingStoppage._id}`
+        : "https://bracu-bus-portal.onrender.com/api/stoppages";
 
       const res = await fetch(url, {
         method,
@@ -61,9 +67,9 @@ function StoppageManager() {
         body: JSON.stringify({
           stoppage_name: formData.stoppage_name,
           stoppage_order: Number(formData.stoppage_order),
-          distance_km: 0,       // ← send 0 since backend requires it
-          route_id: selectedRoute
-        })
+          distance_km: 0, // ← send 0 since backend requires it
+          route_id: selectedRoute,
+        }),
       });
 
       if (!res.ok) {
@@ -75,7 +81,6 @@ function StoppageManager() {
       setFormData({ stoppage_name: "", stoppage_order: "" });
       setEditingStoppage(null);
       fetchStoppages();
-
     } catch (err) {
       console.error(err);
       showToast("Operation failed: " + err.message, "error");
@@ -86,17 +91,19 @@ function StoppageManager() {
     setEditingStoppage(stoppage);
     setFormData({
       stoppage_name: stoppage.stoppage_name,
-      stoppage_order: stoppage.stoppage_order
+      stoppage_order: stoppage.stoppage_order,
     });
   };
 
   const handleDelete = async (id) => {
     if (!confirm("Delete this stoppage?")) return;
     try {
-      const res = await fetch(`http://localhost:9255/api/stoppages/${id}`, { method: "DELETE" });
+      const res = await fetch(`https://bracu-bus-portal.onrender.com/api/stoppages/${id}`, {
+        method: "DELETE",
+      });
       if (!res.ok) throw new Error("Failed");
       showToast("Stoppage deleted!");
-      setStoppages(prev => prev.filter(s => s._id !== id));
+      setStoppages((prev) => prev.filter((s) => s._id !== id));
     } catch (err) {
       showToast("Delete failed", "error");
     }
@@ -109,16 +116,17 @@ function StoppageManager() {
 
   return (
     <div className="rm-section">
-
       <select
         className="rm-input"
         value={selectedRoute}
-        onChange={e => setSelectedRoute(e.target.value)}
+        onChange={(e) => setSelectedRoute(e.target.value)}
         style={{ marginBottom: "1.25rem" }}
       >
         <option value="">Select a Route</option>
-        {routes.map(r => (
-          <option key={r._id} value={r._id}>{r.route_name}</option>
+        {routes.map((r) => (
+          <option key={r._id} value={r._id}>
+            {r.route_name}
+          </option>
         ))}
       </select>
 
@@ -144,36 +152,51 @@ function StoppageManager() {
               {editingStoppage ? "Update" : "Add Stoppage"}
             </button>
             {editingStoppage && (
-              <button className="rm-btn rm-btn-cancel" onClick={handleCancel}>Cancel</button>
+              <button className="rm-btn rm-btn-cancel" onClick={handleCancel}>
+                Cancel
+              </button>
             )}
           </div>
-
-        </div>  
+        </div>
       )}
 
       <h2 className="rm-title">Stoppages</h2>
 
       {selectedRoute && (
         <div className="rm-list">
-          {stoppages.length === 0 && <p className="rm-empty">No stoppages for this route.</p>}
+          {stoppages.length === 0 && (
+            <p className="rm-empty">No stoppages for this route.</p>
+          )}
           {stoppages
             .sort((a, b) => a.stoppage_order - b.stoppage_order)
-            .map(s => (
+            .map((s) => (
               <div key={s._id} className="rm-card">
                 <div className="rm-card-info">
                   <span className="rm-order-badge">#{s.stoppage_order}</span>
                   <span className="rm-card-name">{s.stoppage_name}</span>
                 </div>
                 <div className="rm-card-actions">
-                  <button className="rm-btn rm-btn-edit" onClick={() => handleEdit(s)}>Edit</button>
-                  <button className="rm-btn rm-btn-delete" onClick={() => handleDelete(s._id)}>Delete</button>
+                  <button
+                    className="rm-btn rm-btn-edit"
+                    onClick={() => handleEdit(s)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="rm-btn rm-btn-delete"
+                    onClick={() => handleDelete(s._id)}
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             ))}
         </div>
       )}
 
-      {toast.show && <div className={`toast ${toast.type}`}>{toast.message}</div>}
+      {toast.show && (
+        <div className={`toast ${toast.type}`}>{toast.message}</div>
+      )}
     </div>
   );
 }
