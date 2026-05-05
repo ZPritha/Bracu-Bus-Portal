@@ -4,6 +4,7 @@ const feedbackSchema = new mongoose.Schema({
   name:           { type: String, required: true },
   studentId:      { type: String, required: true },
   busRoute:       { type: String, required: true },
+  behaviour:      { type: String, enum:['Polite', 'Naughty', 'Rude'], required: true },
   message:        { type: String, required: true },
   rating:         { type: Number, min: 1, max: 5 },
   attachmentName: { type: String, default: null },

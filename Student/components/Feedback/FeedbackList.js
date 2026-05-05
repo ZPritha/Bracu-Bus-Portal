@@ -15,6 +15,7 @@ function FeedbackList({ feedbacks }) {
             <div>
               <h3>{item.Name}</h3>
               <p className="feedback-meta">{item.studentId} • {item.busRoute}</p>
+              <p className="feedback-meta">Behaviour: {item.behaviour}</p>
             </div>
             <div className="rating-badge">{renderStars(item.rating)}</div>
           </div>

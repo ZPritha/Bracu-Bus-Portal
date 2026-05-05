@@ -1,5 +1,5 @@
 function SOSButton({ currentUser }) {
-  const [status, setStatus] = React.useState('idle'); // idle | locating | sent | error
+  const [status, setStatus] = React.useState("idle"); // idle | locating | sent | error
   const [countdown, setCountdown] = React.useState(null);
   const [showConfirm, setShowConfirm] = React.useState(false);
   const timerRef = React.useRef(null);
@@ -10,12 +10,12 @@ function SOSButton({ currentUser }) {
     setShowConfirm(false);
     setCountdown(null);
     clearInterval(timerRef.current);
-    setStatus('idle');
+    setStatus("idle");
   };
 
   const confirmSOS = () => {
     setShowConfirm(false);
-    setStatus('locating');
+    setStatus("locating");
     let count = 3;
     setCountdown(count);
 
@@ -32,7 +32,7 @@ function SOSButton({ currentUser }) {
 
   const sendSOS = () => {
     if (!navigator.geolocation) {
-      sendAlert(null, null, 'Location unavailable');
+      sendAlert(null, null, "Location unavailable");
       return;
     }
     navigator.geolocation.getCurrentPosition(
@@ -41,29 +41,29 @@ function SOSButton({ currentUser }) {
         const locationText = `https://maps.google.com/?q=${latitude},${longitude}`;
         sendAlert(latitude, longitude, locationText);
       },
-      () => sendAlert(null, null, 'Location permission denied')
+      () => sendAlert(null, null, "Location permission denied"),
     );
   };
 
   const sendAlert = async (lat, lng, locationText) => {
     try {
-      const res = await fetch('http://localhost:9255/api/sos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("https://bracu-bus-portal.onrender.com/api/sos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           student_id: currentUser.studentId,
           student_name: currentUser.name,
           latitude: lat,
           longitude: lng,
-          location_text: locationText
-        })
+          location_text: locationText,
+        }),
       });
       if (!res.ok) throw new Error();
-      setStatus('sent');
-      setTimeout(() => setStatus('idle'), 5000);
+      setStatus("sent");
+      setTimeout(() => setStatus("idle"), 5000);
     } catch {
-      setStatus('error');
-      setTimeout(() => setStatus('idle'), 4000);
+      setStatus("error");
+      setTimeout(() => setStatus("idle"), 4000);
     }
   };
 
@@ -74,8 +74,12 @@ function SOSButton({ currentUser }) {
         <div className="sos-confirm">
           <p>⚠️ Send SOS alert to main office with your location?</p>
           <div className="sos-confirm-btns">
-            <button className="sos-confirm-yes" onClick={confirmSOS}>Yes, Send SOS</button>
-            <button className="sos-confirm-no" onClick={cancelSOS}>Cancel</button>
+            <button className="sos-confirm-yes" onClick={confirmSOS}>
+              Yes, Send SOS
+            </button>
+            <button className="sos-confirm-no" onClick={cancelSOS}>
+              Cancel
+            </button>
           </div>
         </div>
       )}
@@ -84,24 +88,26 @@ function SOSButton({ currentUser }) {
       {countdown !== null && (
         <div className="sos-countdown">
           Sending SOS in <strong>{countdown}</strong>...
-          <button className="sos-cancel-btn" onClick={cancelSOS}>Cancel</button>
+          <button className="sos-cancel-btn" onClick={cancelSOS}>
+            Cancel
+          </button>
         </div>
       )}
 
       {/* Status messages */}
-      {status === 'sent' && (
+      {status === "sent" && (
         <div className="sos-status success">
           ✅ SOS sent! Main office has been notified with your location.
         </div>
       )}
-      {status === 'error' && (
+      {status === "error" && (
         <div className="sos-status error">
           ❌ Failed to send SOS. Please call the office directly.
         </div>
       )}
 
       {/* SOS Button */}
-      {status === 'idle' && !showConfirm && (
+      {status === "idle" && !showConfirm && (
         <button className="sos-btn" onClick={startSOS}>
           <span className="sos-pulse"></span>
           🆘 SOS Emergency
